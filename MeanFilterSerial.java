@@ -53,22 +53,25 @@ public class MeanFilterSerial
     }
     public static void main(String[] args)
     {   
+        BufferedImage image1 = null;
         try {
             String inpuString = args[0];
             String OutputString = args[1];
-            int windowWidth = Integer.parseInt(args[2]);
-            BufferedImage image1 = null;
+            int windowWidth = Integer.parseInt(args[2]);   
+            
             image1 = ImageIO.read(new File(inpuString));
             MeanFilterSerial mfs = new MeanFilterSerial(image1);
             BufferedImage img = mfs.filter(windowWidth);
+            long end = System.currentTimeMillis();
             try {
                 ImageIO.write(img, "jpg", new File(OutputString));
             } catch (Exception e) {
                 System.out.println(e);
             }
         } catch (Exception e) {
-            System.out.print("Image not found");
+            System.out.println("Invalid Input");
         }
         
     }
-}
+        
+    }

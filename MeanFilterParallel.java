@@ -8,7 +8,7 @@ import javax.imageio.*;
 
 public class MeanFilterParallel extends RecursiveTask <BufferedImage>
 {
-    static int SEQUENTIAL_THRESHOLD = 100000;
+    static int SEQUENTIAL_THRESHOLD = 150000;
     int width;
     int height;
     BufferedImage img1;

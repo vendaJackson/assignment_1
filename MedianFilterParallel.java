@@ -8,7 +8,7 @@ import javax.imageio.*;
 
 public class MedianFilterParallel extends RecursiveTask <BufferedImage>
 {
-    static int SEQUENTIAL_THRESHOLD = 100000;
+    static int SEQUENTIAL_THRESHOLD = 50000;
     int width;
     int height;
     BufferedImage img1;
@@ -82,21 +82,21 @@ public class MedianFilterParallel extends RecursiveTask <BufferedImage>
     }
     public static void main(String[] args) 
     {
+        BufferedImage image1 = null;
         try {
-            String inputString = args[0];
+            String inpuString = args[0];
             String OutputString = args[1];
             int windowWidth = Integer.parseInt(args[2]);
-            BufferedImage image1 = null;
-            image1 = ImageIO.read(new File(inputString));
+            image1 = ImageIO.read(new File("noisy.png"));
             main x = new main();
             BufferedImage img1 = x.median(image1, windowWidth);
             try {
                 ImageIO.write(img1, "jpg", new File(OutputString));
             } catch (Exception e) {
                 System.out.println(e);
-            }
+            }    
         } catch (Exception e) {
-            System.out.print("Image not found");
+            System.out.println("Image not found");
         }
         
     }
