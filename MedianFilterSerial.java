@@ -17,7 +17,6 @@ public class MedianFilterSerial
         width = img.getWidth();
         image2 = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
-
     public BufferedImage filter(int windowWidth)
     {
         int w = (int)Math.floor(windowWidth/2);
@@ -49,28 +48,31 @@ public class MedianFilterSerial
                     image2.setRGB(x-w, y-w, p);
                 }
             }
-
             return image2;
-    }
-
+    }    
     public static void main(String[] args)
-    {   
+    {
         BufferedImage image1 = null;
         try {
-            image1 = ImageIO.read(new File("noisy.png"));
+            String inpuString = args[0];
+            String OutputString = args[1];
+            int windowWidth = Integer.parseInt(args[2]);   
+            
+            image1 = ImageIO.read(new File(inpuString));
+            MedianFilterSerial mfs = new MedianFilterSerial(image1);
+            long start = System.currentTimeMillis();
+            BufferedImage img = mfs.filter(windowWidth);
+            long end = System.currentTimeMillis();
+            float answer = (end -start);
+            System.out.println("elapsed time is "+ answer);
+            try {
+                ImageIO.write(img, "jpg", new File(OutputString));
+            } catch (Exception e) {
+                System.out.println(e);
+            }
         } catch (Exception e) {
-            System.out.print("Image not found");
+            System.out.print("Invalid Input");
         }
-        MedianFilterSerial mfs = new MedianFilterSerial(image1);
-        long start = System.currentTimeMillis();
-        BufferedImage img = mfs.filter(5);
-        long end = System.currentTimeMillis();
-        float answer = (end -start);
-        System.out.println("elapsed time is "+ answer);
-        try {
-            ImageIO.write(img, "jpg", new File("OutputMedianSerial.jpg"));
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        
     }
 }

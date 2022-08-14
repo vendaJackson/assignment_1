@@ -6,8 +6,6 @@ import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 import javax.imageio.*;
 
-
-
 public class MeanFilterParallel extends RecursiveTask <BufferedImage>
 {
     static int SEQUENTIAL_THRESHOLD = 100000;
@@ -34,24 +32,23 @@ public class MeanFilterParallel extends RecursiveTask <BufferedImage>
         long start = System.currentTimeMillis();
         if (width * height <= SEQUENTIAL_THRESHOLD)
         {
-            
             for(int y=w; y< height-(w); y++)
             {
                 for (int x=w; x< width-(w) ;x++)
                 {   
-                    int sumA =0;
+                    int sumA = 0;
                     int sumR = 0;
-                    int sumG =0;
+                    int sumG = 0;
                     int sumB = 0;
-                    for (int i=y-w; i<y+(w+1); i++)
+                    for (int i=y-w; i<y+w+1; i++)
                     {
                         for (int z=x-(w); z< x+(w+1); z++)
-                        {   
+                        {
                             int p = img1.getRGB(z, i);
-                            sumA += (p>>24) & 0xff;
-                            sumR += (p>>16) & 0xff;
-                            sumG += (p>>8)  & 0xff;
-                            sumB += p       & 0xff;
+                            sumA +=(p>>24) & 0xff;
+                            sumR +=(p>>16) & 0xff;
+                            sumG +=(p>>8)  & 0xff;
+                            sumB +=p       & 0xff;
                         }
                     }
                     int h = windowWidth * windowWidth;
@@ -64,14 +61,12 @@ public class MeanFilterParallel extends RecursiveTask <BufferedImage>
                     img2.setRGB(x-w, y-w, p);
                 }
             }
-
             return img2;
         }
         else 
-        {   
-            int m = 2*w-1;
-            MedianFilterParallel leftTop  = new MedianFilterParallel(img1.getSubimage(0,0, (int)Math.floor(width/2), height), windowWidth);
-            MedianFilterParallel rightTop = new MedianFilterParallel(img1.getSubimage((int)Math.ceil(width/2)-windowWidth, 0, width - (int)Math.ceil(width/2)+ windowWidth, height), windowWidth); //5
+        {
+            MeanFilterParallel leftTop  = new MeanFilterParallel(img1.getSubimage(0,0, (int)Math.floor(width/2), height), windowWidth);
+            MeanFilterParallel rightTop = new MeanFilterParallel(img1.getSubimage((int)Math.ceil(width/2)-w -3, 0, width - (int)Math.ceil(width/2)+ w +3, height), windowWidth); //5
             leftTop.fork();
             BufferedImage r = rightTop.compute();
             leftTop.join();
@@ -79,38 +74,43 @@ public class MeanFilterParallel extends RecursiveTask <BufferedImage>
             Graphics g = img3.getGraphics();
             img2 = img3;
             g.drawImage(leftTop.img2  , 0, 0, null);
-            g.drawImage(r , leftTop.img2.getWidth()-windowWidth+1, 0, null);  //4       
+            g.drawImage(r , leftTop.img2.getWidth()-w-2, 0, null);  //4       
             g.dispose();
             img2 = img3;
-            long end = System.currentTimeMillis();
-            float answer = (end -start);
-            System.out.println("elapsed time is "+ answer);
             return img3;
         }
     }
-
-    public static void main(String[] args) {
-
+    public static void main(String[] args) 
+    {
         BufferedImage image1 = null;
         try {
+            String inpuString = args[0];
+            String OutputString = args[1];
+            int windowWidth = Integer.parseInt(args[2]);
             image1 = ImageIO.read(new File("noisy.png"));
+            Run x = new Run();
+            BufferedImage img1 = x.mean(image1, windowWidth);
+            try {
+                ImageIO.write(img1, "jpg", new File(OutputString));
+            } catch (Exception e) {
+                System.out.println(e);
+            }    
         } catch (Exception e) {
-            System.out.print("Image not found");
+            System.out.println("Image not found");
         }
-        Run x = new Run();
-        BufferedImage img1 = x.mean(image1, 5);
-        try {
-            ImageIO.write(img1, "jpg", new File("OutputMeanParallel.jpg"));
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        
+        
     }
 }
 class Run{
     static BufferedImage mean(BufferedImage img, int x)
     {
         MeanFilterParallel mfp = new MeanFilterParallel(img, x);
+        long start = System.currentTimeMillis();
         ForkJoinPool.commonPool().invoke(mfp);
+        long end = System.currentTimeMillis();
+        float answer = (end -start);
+        System.out.println("elapsed time is "+ answer);
         return mfp.img3;
     }
 }

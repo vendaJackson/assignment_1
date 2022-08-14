@@ -26,13 +26,11 @@ public class MedianFilterParallel extends RecursiveTask <BufferedImage>
         windowWidth = x;
         w = (int)Math.floor(windowWidth/2);
     }
-
     public BufferedImage compute()
     {
         long start = System.currentTimeMillis();
         if (width * height <= SEQUENTIAL_THRESHOLD)
-        {
-            
+        {        
             for(int y=w; y< height-(w); y++)
             {
                 for (int x=w; x< width-(w) ;x++)
@@ -82,21 +80,25 @@ public class MedianFilterParallel extends RecursiveTask <BufferedImage>
             return img3;
         }
     }
-    public static void main(String[] args) {
-
-        BufferedImage image1 = null;
+    public static void main(String[] args) 
+    {
         try {
-            image1 = ImageIO.read(new File("noisy.png"));
+            String inputString = args[0];
+            String OutputString = args[1];
+            int windowWidth = Integer.parseInt(args[2]);
+            BufferedImage image1 = null;
+            image1 = ImageIO.read(new File(inputString));
+            main x = new main();
+            BufferedImage img1 = x.median(image1, windowWidth);
+            try {
+                ImageIO.write(img1, "jpg", new File(OutputString));
+            } catch (Exception e) {
+                System.out.println(e);
+            }
         } catch (Exception e) {
             System.out.print("Image not found");
         }
-        main x = new main();
-        BufferedImage img1 = x.median(image1, 5);
-        try {
-            ImageIO.write(img1, "jpg", new File("OutputMedianParallelb.jpg"));
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        
     }
 }
 class main{

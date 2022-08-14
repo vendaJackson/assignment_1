@@ -9,15 +9,13 @@ public class MeanFilterSerial
     BufferedImage image2;
     int height;
     int width;
-    
 
     public MeanFilterSerial(BufferedImage img)
     {
         image1 = img;
         height = img.getHeight();
         width = img.getWidth();
-        image2 = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        
+        image2 = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);        
     }
 
     public BufferedImage filter(int windowWidth)
@@ -53,23 +51,24 @@ public class MeanFilterSerial
         System.out.println("elapsed time is "+ answer);
         return image2;
     }
-
     public static void main(String[] args)
     {   
-        BufferedImage image1 = null;
         try {
-            image1 = ImageIO.read(new File("noisy.png"));
+            String inpuString = args[0];
+            String OutputString = args[1];
+            int windowWidth = Integer.parseInt(args[2]);
+            BufferedImage image1 = null;
+            image1 = ImageIO.read(new File(inpuString));
+            MeanFilterSerial mfs = new MeanFilterSerial(image1);
+            BufferedImage img = mfs.filter(windowWidth);
+            try {
+                ImageIO.write(img, "jpg", new File(OutputString));
+            } catch (Exception e) {
+                System.out.println(e);
+            }
         } catch (Exception e) {
             System.out.print("Image not found");
         }
-        MeanFilterSerial mfs = new MeanFilterSerial(image1);
         
-        BufferedImage img = mfs.filter(5);
-        
-        try {
-            ImageIO.write(img, "jpg", new File("OutputMeanSerial.jpg"));
-        } catch (Exception e) {
-            System.out.println(e);
-        }
     }
 }
