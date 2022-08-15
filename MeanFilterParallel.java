@@ -29,7 +29,6 @@ public class MeanFilterParallel extends RecursiveTask <BufferedImage>
 
     public BufferedImage compute()
     {
-        long start = System.currentTimeMillis();
         if (width * height <= SEQUENTIAL_THRESHOLD)
         {
             for(int y=w; y< height-(w); y++)
@@ -66,7 +65,7 @@ public class MeanFilterParallel extends RecursiveTask <BufferedImage>
         else 
         {
             MeanFilterParallel leftTop  = new MeanFilterParallel(img1.getSubimage(0,0, (int)Math.floor(width/2), height), windowWidth);
-            MeanFilterParallel rightTop = new MeanFilterParallel(img1.getSubimage((int)Math.ceil(width/2)-w -3, 0, width - (int)Math.ceil(width/2)+ w +3, height), windowWidth); //5
+            MeanFilterParallel rightTop = new MeanFilterParallel(img1.getSubimage((int)Math.ceil(width/2)- windowWidth , 0, width - (int)Math.ceil(width/2)+ windowWidth , height), windowWidth); //5
             leftTop.fork();
             BufferedImage r = rightTop.compute();
             leftTop.join();
@@ -74,7 +73,7 @@ public class MeanFilterParallel extends RecursiveTask <BufferedImage>
             Graphics g = img3.getGraphics();
             img2 = img3;
             g.drawImage(leftTop.img2  , 0, 0, null);
-            g.drawImage(r , leftTop.img2.getWidth()-w-2, 0, null);  //4       
+            g.drawImage(r , leftTop.img2.getWidth()- windowWidth+1 , 0, null);  //4       
             g.dispose();
             img2 = img3;
             return img3;
@@ -87,7 +86,7 @@ public class MeanFilterParallel extends RecursiveTask <BufferedImage>
             String inpuString = args[0];
             String OutputString = args[1];
             int windowWidth = Integer.parseInt(args[2]);
-            image1 = ImageIO.read(new File("noisy.png"));
+            image1 = ImageIO.read(new File(inpuString));
             Run x = new Run();
             BufferedImage img1 = x.mean(image1, windowWidth);
             try {

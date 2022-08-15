@@ -71,7 +71,7 @@ public class MedianFilterSerial
                 System.out.println(e);
             }
         } catch (Exception e) {
-            System.out.print("Invalid Input");
+            System.out.println("Invalid Input");
         }
         
     }

@@ -87,7 +87,7 @@ public class MedianFilterParallel extends RecursiveTask <BufferedImage>
             String inpuString = args[0];
             String OutputString = args[1];
             int windowWidth = Integer.parseInt(args[2]);
-            image1 = ImageIO.read(new File("noisy.png"));
+            image1 = ImageIO.read(new File(inpuString));
             main x = new main();
             BufferedImage img1 = x.median(image1, windowWidth);
             try {
